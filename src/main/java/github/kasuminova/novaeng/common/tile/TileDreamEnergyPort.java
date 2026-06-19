@@ -109,7 +109,6 @@ public class TileDreamEnergyPort extends BaseNodeTileEntity<IMachineNode> implem
         }
     }
 
-    @SuppressWarnings("ReturnOfInnerClass")
     public final class DreamenergyHandler implements IEnergyHandler {
 
         private static final BigInteger max = BigDecimal.valueOf(Double.MAX_VALUE).toBigInteger();
@@ -121,17 +120,16 @@ public class TileDreamEnergyPort extends BaseNodeTileEntity<IMachineNode> implem
         private byte init = 0;
 
         @Override
-        public IEnergyHandler init(TileEntity tileEntity, HubNode.HubMetadata hubMetadata) {
+        public void init(TileEntity tileEntity, HubNode.HubMetadata hubMetadata) {
             if (getCtrlStructureFormed()) {
                 canSend.init(DreamEnergyCore.getEnergyStoredString(getCtrl()));
                 init = SUCCEEDED;
             } else init = FAILED;
-            return this;
         }
 
         @Override
-        public IEnergyHandler init(ItemStack itemStack, HubNode.HubMetadata hubMetadata) {
-            return this;
+        public void init(ItemStack itemStack, HubNode.HubMetadata hubMetadata) {
+
         }
 
         @Override
@@ -180,11 +178,6 @@ public class TileDreamEnergyPort extends BaseNodeTileEntity<IMachineNode> implem
         @Override
         public boolean canReceive(IEnergyHandler iEnergyHandler, HubNode.HubMetadata hubMetadata) {
             return init == SUCCEEDED;
-        }
-
-        @Override
-        public void recycle() {
-            clear();
         }
 
         @Override
