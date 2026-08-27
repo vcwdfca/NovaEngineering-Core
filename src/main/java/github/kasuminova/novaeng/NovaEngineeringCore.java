@@ -51,8 +51,7 @@ import static github.kasuminova.novaeng.mixin.NovaEngCoreEarlyMixinLoader.LOG_PR
 @Mod(modid = NovaEngineeringCore.MOD_ID, name = NovaEngineeringCore.MOD_NAME, version = NovaEngineeringCore.VERSION,
     dependencies = "required-after:modularmachinery@[2.3.0,);" +
         "required-after:theoneprobe@[1.12-1.4.28,);" +
-        "required-after:appliedenergistics2@[v0.56.4,);" +
-        "required-after:ae2fc@[2.6.3-r,);" +
+        "required-after:ae2@[1.0.12,);" +
         "required-after:lumenized@[1.0.2,);",
     acceptedMinecraftVersions = "[1.12, 1.13)",
     acceptableRemoteVersions = "[1.21.7, 1.24.0)"

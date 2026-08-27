@@ -25,6 +25,9 @@ repositories {
         name = 'GeckoLib'
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
+    maven {
+        url = 'https://jitpack.io'
+    }
     mavenCentral()
 }
 
@@ -40,16 +43,18 @@ dependencies {
         compileOnly 'com.cleanroommc:lwjglx:1.0.0'
     }
 
-    implementation 'io.github.chaosunity.forgelin:Forgelin-Continuous:2.2.20.0'
+    implementation 'io.github.chaosunity.forgelin:Forgelin-Continuous:2.3.20.0'
     implementation 'CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.711'
 
-    modImplementation 'curse.maven:modularui-624243:7929464'
+    modImplementation("curse.maven:modularui-uf-1663175:8704196"){
+        transitive = false
+    }
     modCompileOnly 'curse.maven:electroblobs-wizardry-265642:5354477'
-    modImplementation name: 'MMCE-ComponentModelHider', version: '1.1', classifier: 'dev'
-    modImplementation name: 'resourceloader', version: '1.5.3', classifier: 'main'
-    modImplementation name: 'circulation_networks-1.12.2', version: '1.1.0', classifier: 'dev'
-    modImplementation name: 'ModularMachinery-CE', version: '2.3.3', classifier: 'dev'
-    modImplementation 'curse.maven:extended-crafting-terminals-for-applied-1157825:6503414'
+    modImplementation ":MMCE-ComponentModelHider:1.1:dev"
+    modImplementation ":resourceloader:1.5.3:main"
+    modImplementation ":circulation_networks-1.12.2:1.1.0:dev"
+    modImplementation ":ModularMachinery-CE:2.3.3:dev"
+    modImplementation ":appcompat:0.0.0+af09e46:dev"
     modImplementation 'curse.maven:lumenized-1234162:6378222'
     modImplementation 'curse.maven:mantle-74924:2713386'
     modImplementation 'curse.maven:tinkers-construct-74072:2902483'
@@ -63,10 +68,11 @@ dependencies {
     modImplementation 'curse.maven:the-one-probe-245211:2667280'
     modImplementation 'curse.maven:FTB-Library-237167:2985811'
     modImplementation 'curse.maven:FTBU-237102:3157548'
-    modImplementation 'curse.maven:ae2-extended-life-570458:6302098'
-    modImplementation 'curse.maven:ae2fluidcraft-rework-unofficial-1404390:7336029'
-    modCompileOnly 'curse.maven:MekanismEnergistics-1027681:5775101'
-    modImplementation 'curse.maven:nae2-884359:5380800'
+
+    def ae2_version = "1.0.12"
+    modImplementation "com.github.FormlessDragon:Applied-Energistics-2-Supergiant:v${ae2_version}:dev"
+    def mekeng_version = "1.1.1"
+    modCompileOnly "com.github.FormlessDragon:Applied-Mekanistics:v${mekeng_version}:dev"
     modImplementation 'curse.maven:CodeChickenLib-242818:2779848'
     modImplementation 'curse.maven:wanionlib-253043:4623135'
     modImplementation 'curse.maven:avaritia-1-1x-unofficial-1165010:7939693'
@@ -97,7 +103,6 @@ dependencies {
     modCompileOnly 'curse.maven:more-electric-tools-366298:3491973'
     modImplementation 'curse.maven:extrabotany-299086:3112313'
     modImplementation 'curse.maven:libnine-322344:3509087'
-    modImplementation 'curse.maven:lazy-ae2-322347:3254160'
     modCompileOnly 'curse.maven:better-chat-363860:3048407'
     modCompileOnly 'curse.maven:lunatriuscore-225605:2489549'
     modCompileOnly 'curse.maven:immersive-engineering-231951:2974106'
@@ -109,7 +114,6 @@ dependencies {
     modImplementation 'curse.maven:extended-crafting-nomifactory-edition-398267:5778512'
     modImplementation 'curse.maven:techguns-244201:2958103'
     modImplementation 'curse.maven:legendary-tooltips-532127:5734973'
-    modImplementation 'curse.maven:betterer-p2p-943734:4928154'
     modImplementation 'curse.maven:nuclearcraft-overhauled-336895:6605808'
     modImplementation 'curse.maven:loot-overhaul-299389:2711740'
     modImplementation 'curse.maven:BloodMagic-224791:2822288'
