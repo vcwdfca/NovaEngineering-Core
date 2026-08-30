@@ -16,7 +16,7 @@ public enum Mods {
                 return this.loaded = false;
             }
             try {
-                Class.forName("appeng.core.AE2ELCore");
+                Class.forName("ae2.core.AE2ELCore");
                 return this.loaded = true;
             } catch (Exception e) {
                 return this.loaded = false;

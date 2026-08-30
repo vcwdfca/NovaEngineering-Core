@@ -1,10 +1,10 @@
 package github.kasuminova.novaeng.common.container.data;
 
-import appeng.api.networking.crafting.ICraftingCPU;
-import appeng.api.networking.crafting.ICraftingGrid;
-import appeng.api.storage.data.IAEItemStack;
-import appeng.me.GridAccessException;
-import appeng.util.item.AEItemStack;
+import ae2.api.networking.crafting.ICraftingCPU;
+import ae2.api.networking.crafting.CraftingJobStatus;
+import ae2.api.networking.crafting.ICraftingService;
+import ae2.api.networking.IGridNode;
+import ae2.api.stacks.GenericStack;
 import github.kasuminova.novaeng.common.block.ecotech.ecalculator.prop.Levels;
 import github.kasuminova.novaeng.common.ecalculator.ECPUCluster;
 import github.kasuminova.novaeng.common.tile.ecotech.ecalculator.ECalculatorController;
@@ -13,7 +13,6 @@ import github.kasuminova.novaeng.common.tile.ecotech.ecalculator.ECalculatorThre
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,26 +44,33 @@ public record ECalculatorData(long totalStorage, long usedExtraStorage, int acce
             return ecpuData;
         }
 
-        try {
-            final ICraftingGrid crafting = channel.getProxy().getCrafting();
-            final List<ECalculatorThreadCore> threadCores = controller.getThreadCores();
-            for (ICraftingCPU cpu : crafting.getCpus()) {
-                if (!(cpu instanceof ECPUCluster ecpu)) {
-                    continue;
-                }
+        final IGridNode node = channel.getActionableNode();
+        if (node == null || node.grid() == null) {
+            return ecpuData;
+        }
 
-                ECalculatorThreadCore core = ecpu.novaeng_ec$getController();
-                if (core == null || !threadCores.contains(core)) {
-                    continue;
-                }
-
-                ecpuData.add(new ECPUData(
-                    cpu.getFinalOutput(), cpu.getAvailableStorage(), ecpu.novaeng_ec$getUsedExtraStorage(),
-                    ecpu.novaeng_ec$getParallelismRecorder().usedTimeAvg(),
-                    ecpu.novaeng_ec$getTimeRecorder().usedTimeAvg()
-                ));
+        final ICraftingService crafting = node.grid().getCraftingService();
+        final List<ECalculatorThreadCore> threadCores = controller.getThreadCores();
+        for (ICraftingCPU cpu : crafting.getCpus()) {
+            if (!(cpu instanceof ECPUCluster ecpu)) {
+                continue;
             }
-        } catch (GridAccessException ignored) {
+
+            final ECalculatorThreadCore core = ecpu.novaeng_ec$getController();
+            if (core == null || !threadCores.contains(core)) {
+                continue;
+            }
+
+            final CraftingJobStatus status = cpu.getJobStatus();
+            if (status == null || status.crafting() == null) {
+                continue;
+            }
+
+            ecpuData.add(new ECPUData(
+                status.crafting(), cpu.getAvailableStorage(), ecpu.novaeng_ec$getUsedExtraStorage(),
+                ecpu.novaeng_ec$getParallelismRecorder().usedTimeAvg(),
+                ecpu.novaeng_ec$getTimeRecorder().usedTimeAvg()
+            ));
         }
 
         return ecpuData;
@@ -88,9 +94,11 @@ public record ECalculatorData(long totalStorage, long usedExtraStorage, int acce
         }
         byte ecpuSize = buf.readByte();
         List<ECPUData> ecpuList = new ArrayList<>();
+        io.netty.buffer.ByteBuf packetData = buf;
+        net.minecraft.network.PacketBuffer packetBuffer = new net.minecraft.network.PacketBuffer(packetData);
         if (ecpuSize > 0) {
             for (byte i = 0; i < ecpuSize; i++) {
-                ecpuList.add(new ECPUData(AEItemStack.fromPacket(buf), buf.readLong(), buf.readLong(), buf.readInt(), buf.readInt()));
+                ecpuList.add(new ECPUData(GenericStack.readBuffer(packetBuffer), buf.readLong(), buf.readLong(), buf.readInt(), buf.readInt()));
             }
         }
         int cpuUsagePerSecond = buf.readInt();
@@ -110,11 +118,9 @@ public record ECalculatorData(long totalStorage, long usedExtraStorage, int acce
             buf.writeByte(threadCore.maxHyperThreads);
         });
         buf.writeByte(ecpuList.size());
+        net.minecraft.network.PacketBuffer packetBuffer = new net.minecraft.network.PacketBuffer(buf);
         ecpuList.forEach(ecpu -> {
-            try {
-                ecpu.crafting.writeToPacket(buf);
-            } catch (IOException ignored) {
-            }
+            GenericStack.writeBuffer(ecpu.crafting, packetBuffer);
             buf.writeLong(ecpu.usedMemory);
             buf.writeLong(ecpu.usedExtraMemory);
             buf.writeInt(ecpu.parallelismPreSecond);
@@ -123,7 +129,7 @@ public record ECalculatorData(long totalStorage, long usedExtraStorage, int acce
         buf.writeInt(cpuUsagePerSecond);
     }
 
-    public record ECPUData(IAEItemStack crafting, long usedMemory, long usedExtraMemory, int parallelismPreSecond,
+    public record ECPUData(GenericStack crafting, long usedMemory, long usedExtraMemory, int parallelismPreSecond,
                            int cpuUsagePerSecond) {
     }
 

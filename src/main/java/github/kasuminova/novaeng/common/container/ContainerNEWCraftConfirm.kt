@@ -1,50 +1,54 @@
 package github.kasuminova.novaeng.common.container
 
-import appeng.api.networking.crafting.ICraftingGrid
-import appeng.api.networking.security.IActionHost
-import appeng.container.implementations.ContainerCraftConfirm
-import appeng.helpers.WirelessTerminalGuiObject
-import appeng.me.helpers.PlayerSource
+import ae2.container.implementations.ContainerCraftConfirm
+import ae2.api.storage.ISubGuiHost
 import github.kasuminova.novaeng.common.util.AutoCraftingQueue
-import github.kasuminova.novaeng.mixin.ae2.AccessorContainerCraftConfirm
-import github.kasuminova.novaeng.mixin.ae2.AccessorCraftingCPURecord
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.entity.player.InventoryPlayer
 
-class ContainerNEWCraftConfirm(ip: InventoryPlayer, te: WirelessTerminalGuiObject) : ContainerCraftConfirm(ip, te) {
+class ContainerNEWCraftConfirm(ip: InventoryPlayer, te: ISubGuiHost) : ContainerCraftConfirm(ip, te) {
     override fun canInteractWith(playerIn: net.minecraft.entity.player.EntityPlayer): Boolean {
         return true
     }
 
     override fun startJob() {
-        @Suppress("USELESS_IS_CHECK", "IMPOSSIBLE_IS_CHECK_WARNING")
-        if (this is AccessorContainerCraftConfirm) {
-            val h = this.target as? IActionHost
-            h?.actionableNode?.grid?.let { grid ->
-                if (this.getResult() != null && !this.isSimulation) {
-                    val cc = grid.getCache<ICraftingGrid>(ICraftingGrid::class.java)
-                    cc.submitJob(
-                        this.getResult(),
-                        null,
-                        if (this.getSelectedCpu() == -1) null
-                        else {
-                            val c = this.getCpus()[this.getSelectedCpu()]
-                            if (c is AccessorCraftingCPURecord) {
-                                c.getCpu()
-                            } else null
-                        },
-                        true,
-                        PlayerSource(this.playerInv.player, h)
-                    )
-                }
-            }
-            val player = playerInv.player as EntityPlayerMP
-            AutoCraftingQueue.getQueue(player)?.let {
-                if (!it.executionQueue(player)) {
-                    player.closeContainer()
-                }
+        val player = getPlayerInventory().player
+        if (isClientSide || player !is EntityPlayerMP) {
+            super.startJob()
+            return
+        }
+
+        val result = getResult()
+        if (result == null || result.simulation() || !result.missingItems().isEmpty()) {
+            super.startJob()
+            return
+        }
+
+        super.startJob()
+        val submitResult = submitError.result()
+        if (!isValidContainer || (submitResult != null && !submitResult.successful())) {
+            return
+        }
+
+        AutoCraftingQueue.getQueue(player)?.let {
+            if (!it.executionQueue(player)) {
+                player.closeContainer()
             }
         }
+    }
+
+    override fun goBack() {
+        val player = getPlayerInventory().player
+        if (player !is EntityPlayerMP) {
+            super.goBack()
+            return
+        }
+
+        AutoCraftingQueue.getQueue(player)?.let {
+            if (!it.executionQueue(player)) {
+                player.closeContainer()
+            }
+        } ?: player.closeContainer()
     }
 
 }

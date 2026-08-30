@@ -1,21 +1,13 @@
 package github.kasuminova.novaeng.common.util
 
-import appeng.api.networking.crafting.ICraftingGrid
-import appeng.api.networking.crafting.ICraftingJob
-import appeng.api.util.AEPartLocation
-import appeng.container.ContainerOpenContext
-import appeng.core.AELog
-import appeng.me.helpers.PlayerSource
-import appeng.util.item.AEItemStack
-import com.circulation.random_complement.common.util.MEHandler
-import github.kasuminova.novaeng.NovaEngineeringCore
-import github.kasuminova.novaeng.common.CommonProxy
+import ae2.api.networking.security.IActionHost
+import ae2.api.networking.crafting.CalculationStrategy
+import ae2.me.helpers.PlayerSource
 import github.kasuminova.novaeng.common.container.ContainerNEWCraftConfirm
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import java.util.Queue
-import java.util.concurrent.Future
 
 class AutoCraftingQueue {
 
@@ -40,50 +32,22 @@ class AutoCraftingQueue {
     }
 
     fun executionQueue(player: EntityPlayer): Boolean {
-        queue.poll()?.let { item ->
-            val obj = MEHandler.getTerminalGuiObject(player)
-            obj?.actionableNode?.let { node ->
-                val g = node.grid
-                var futureJob: Future<ICraftingJob?>? = null
-
-                try {
-                    val cg: ICraftingGrid = g.getCache(ICraftingGrid::class.java)
-                    futureJob = cg.beginCraftingJob(
-                        player.world,
-                        g,
-                        PlayerSource(player, obj),
-                        AEItemStack.fromItemStack(item)?.setStackSize(item.count.toLong()),
-                        null
-                    )
-
-                    player.openGui(
-                        NovaEngineeringCore.instance,
-                        CommonProxy.GuiType.AUTO_CRAFTGUI.ordinal,
-                        player.world,
-                        obj.inventorySlot,
-                        if (obj.isBaubleSlot) 1 else 0,
-                        Int.MIN_VALUE
-                    )
-
-                    val ccc = player.openContainer
-
-                    if (ccc is ContainerNEWCraftConfirm) {
-                        val ctx = ContainerOpenContext(null)
-                        ctx.side = AEPartLocation.INTERNAL
-
-                        ccc.openContext = ctx
-                        ccc.isAutoStart = false
-                        ccc.setJob(futureJob)
-                        ccc.detectAndSendChanges()
-                    }
-                    return true
-                } catch (e: Throwable) {
-                    futureJob?.cancel(true)
-                    AELog.debug(e)
-                }
-
-            }
-        }
-        return false
+        val item = queue.poll() ?: return false
+        val container = player.openContainer as? ContainerNEWCraftConfirm ?: return false
+        val host = container.target as? IActionHost ?: return false
+        val node = host.actionableNode ?: return false
+        val key = ae2.api.stacks.AEItemKey.of(item) ?: return false
+        val source = PlayerSource(player, host)
+        val job = node.grid().craftingService.beginCraftingCalculation(
+            player.world,
+            { source },
+            key,
+            item.count.toLong(),
+            CalculationStrategy.REPORT_MISSING_ITEMS
+        )
+        container.isAutoStart = false
+        container.setJob(job)
+        container.detectAndSendChanges()
+        return true
     }
 }

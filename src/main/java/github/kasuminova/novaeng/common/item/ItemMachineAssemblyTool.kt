@@ -2,16 +2,15 @@
 
 package github.kasuminova.novaeng.common.item
 
-import appeng.api.networking.crafting.ICraftingGrid
-import appeng.util.item.AEItemStack
+import ae2.api.stacks.AEItemKey
+import ae2.core.gui.locator.GuiHostLocators
+import ae2.helpers.WirelessTerminalGuiHost
 import com.brandon3055.draconicevolution.api.itemconfig.BooleanConfigField
 import com.brandon3055.draconicevolution.api.itemconfig.IConfigurableItem
 import com.brandon3055.draconicevolution.api.itemconfig.IItemConfigField
 import com.brandon3055.draconicevolution.api.itemconfig.IntegerConfigField
 import com.brandon3055.draconicevolution.api.itemconfig.ItemConfigFieldRegistry
 import com.brandon3055.draconicevolution.api.itemconfig.ToolConfigHelper
-import com.circulation.random_complement.common.interfaces.RCCraftingGridCache
-import com.circulation.random_complement.common.util.MEHandler
 import github.kasuminova.novaeng.NovaEngineeringCore
 import github.kasuminova.novaeng.common.CommonProxy
 import github.kasuminova.novaeng.common.util.AssemblyBlockArray
@@ -145,14 +144,14 @@ object ItemMachineAssemblyTool : ItemBasic("machine_assembly_tool"), IConfigurab
                 val missing = NEWMachineAssemblyManager.checkAllItems(player, st, usingAE, autoAECrafting)
                 val q = missing.list
                 if (autoAECrafting && !q.isEmpty()) {
-                    MEHandler.getTerminalGuiObject(player)?.actionableNode?.grid?.let {
+                    findWirelessTerminal(player)?.getActionableNode()?.grid()?.let {
                         val autoList = ArrayDeque<ItemStack>()
-                        val cgc: RCCraftingGridCache = it.getCache(ICraftingGrid::class.java)
-                        val list = cgc.`rc$getCraftableItems`()
+                        val list = it.getCraftingService().getCraftables(AEItemKey.filter())
                         for (stacks in q) {
                             for (item in stacks) {
                                 if (item.isEmpty) continue
-                                if (list.containsKey(AEItemStack.fromItemStack(item))) {
+                                val key = AEItemKey.of(item)
+                                if (key != null && list.contains(key)) {
                                     autoList.add(item)
                                     break
                                 }
@@ -322,6 +321,27 @@ object ItemMachineAssemblyTool : ItemBasic("machine_assembly_tool"), IConfigurab
             }
             .max()
             .orElse(1)
+    }
+
+    private fun findWirelessTerminal(player: EntityPlayer): WirelessTerminalGuiHost<*>? {
+        for (slot in 0 until player.inventory.sizeInventory) {
+            val host = GuiHostLocators.forInventorySlot(slot).locate(player, WirelessTerminalGuiHost::class.java)
+            if (host != null) {
+                return host
+            }
+        }
+
+        if (net.minecraftforge.fml.common.Loader.isModLoaded("baubles")) {
+            val handler = baubles.api.BaublesApi.getBaublesHandler(player)
+            for (slot in 0 until handler.slots) {
+                val host = GuiHostLocators.forBaubleSlot(slot).locate(player, WirelessTerminalGuiHost::class.java)
+                if (host != null) {
+                    return host
+                }
+            }
+        }
+
+        return null
     }
 
 }

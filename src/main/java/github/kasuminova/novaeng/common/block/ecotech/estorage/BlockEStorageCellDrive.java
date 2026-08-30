@@ -1,10 +1,9 @@
 package github.kasuminova.novaeng.common.block.ecotech.estorage;
 
-import appeng.api.AEApi;
-import appeng.api.storage.ICellInventoryHandler;
-import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.data.IAEStack;
-import appeng.tile.inventory.AppEngCellInventory;
+import ae2.api.storage.StorageCells;
+import ae2.api.storage.cells.StorageCell;
+import ae2.api.storage.cells.StorageCellStatistics;
+import ae2.util.inv.AppEngCellInventory;
 import github.kasuminova.novaeng.NovaEngineeringCore;
 import github.kasuminova.novaeng.common.block.ecotech.estorage.prop.DriveStatus;
 import github.kasuminova.novaeng.common.block.ecotech.estorage.prop.DriveStorageCapacity;
@@ -12,7 +11,6 @@ import github.kasuminova.novaeng.common.block.ecotech.estorage.prop.DriveStorage
 import github.kasuminova.novaeng.common.block.ecotech.estorage.prop.DriveStorageType;
 import github.kasuminova.novaeng.common.block.prop.FacingProp;
 import github.kasuminova.novaeng.common.core.CreativeTabNovaEng;
-import github.kasuminova.novaeng.common.estorage.EStorageCellHandler;
 import github.kasuminova.novaeng.common.item.estorage.EStorageCell;
 import github.kasuminova.novaeng.common.tile.ecotech.estorage.EStorageCellDrive;
 import net.minecraft.block.SoundType;
@@ -35,7 +33,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
@@ -78,11 +75,11 @@ public class BlockEStorageCellDrive extends BlockEStoragePart {
         TileEntity te = worldIn.getTileEntity(pos);
         if (te instanceof EStorageCellDrive drive) {
             AppEngCellInventory inv = drive.getDriveInv();
-            for (int i = 0; i < inv.getSlots(); i++) {
+            for (int i = 0; i < inv.size(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (!stack.isEmpty()) {
                     spawnAsEntity(worldIn, pos, stack);
-                    inv.setStackInSlot(i, ItemStack.EMPTY);
+                    inv.setItemDirect(i, ItemStack.EMPTY);
                 }
             }
         }
@@ -109,8 +106,8 @@ public class BlockEStorageCellDrive extends BlockEStoragePart {
             return state;
         }
 
-        EStorageCellHandler handler = EStorageCellHandler.getHandler(stack);
-        if (handler == null) {
+        StorageCell cellInventory = StorageCells.getCellInventory(stack, null);
+        if (!(cellInventory instanceof StorageCellStatistics)) {
             return state;
         }
 
@@ -118,19 +115,6 @@ public class BlockEStorageCellDrive extends BlockEStoragePart {
         DriveStorageLevel level = cell.getLevel();
         DriveStorageType type = EStorageCellDrive.getCellType(cell);
         if (type == null) {
-            return state;
-        }
-
-        final Collection<IStorageChannel<? extends IAEStack<?>>> storageChannels = AEApi.instance().storage().storageChannels();
-        ICellInventoryHandler cellInventory = null;
-        for (final IStorageChannel<? extends IAEStack<?>> channel : storageChannels) {
-            cellInventory = handler.getCellInventory(stack, drive, channel);
-            if (cellInventory != null) {
-                break;
-            }
-        }
-
-        if (cellInventory == null) {
             return state;
         }
 

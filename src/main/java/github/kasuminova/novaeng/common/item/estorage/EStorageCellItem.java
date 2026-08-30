@@ -1,9 +1,7 @@
 package github.kasuminova.novaeng.common.item.estorage;
 
-import appeng.api.AEApi;
-import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
-import appeng.api.storage.data.IAEItemStack;
+import ae2.api.stacks.AEItemKey;
+import ae2.api.stacks.AEKeyType;
 import github.kasuminova.novaeng.NovaEngineeringCore;
 import github.kasuminova.novaeng.common.block.ecotech.estorage.prop.DriveStorageLevel;
 import net.minecraft.item.ItemStack;
@@ -11,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class EStorageCellItem extends EStorageCell<IAEItemStack> {
+public class EStorageCellItem extends EStorageCell<AEItemKey> {
 
     public static final EStorageCellItem LEVEL_A = new EStorageCellItem(DriveStorageLevel.A, 16, 4);
     public static final EStorageCellItem LEVEL_B = new EStorageCellItem(DriveStorageLevel.B, 64, 16);
@@ -35,7 +33,7 @@ public class EStorageCellItem extends EStorageCell<IAEItemStack> {
 
     @Nonnull
     @Override
-    public IStorageChannel<IAEItemStack> getChannel() {
-        return AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+    public AEKeyType getKeyType() {
+        return AEKeyType.items();
     }
 }

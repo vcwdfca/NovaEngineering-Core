@@ -1,8 +1,6 @@
 package github.kasuminova.novaeng.client;
 
-import appeng.api.features.IWirelessTermHandler;
-import appeng.helpers.WirelessTerminalGuiObject;
-import baubles.api.BaublesApi;
+import ae2.client.gui.style.GuiStyleManager;
 import github.kasuminova.mmce.client.renderer.MachineControllerRenderer;
 import github.kasuminova.novaeng.NovaEngineeringCore;
 import github.kasuminova.novaeng.client.book.BookTransformerAppendModifiers;
@@ -27,6 +25,7 @@ import github.kasuminova.novaeng.client.util.TitleUtils;
 import github.kasuminova.novaeng.common.CommonProxy;
 import github.kasuminova.novaeng.common.command.CommandPacketProfiler;
 import github.kasuminova.novaeng.common.command.ExportResearchDataToJson;
+import github.kasuminova.novaeng.common.container.ContainerNEWCraftConfirm;
 import github.kasuminova.novaeng.common.item.ItemRawOre;
 import github.kasuminova.novaeng.common.registry.RegistryBlocks;
 import github.kasuminova.novaeng.common.registry.RegistryItems;
@@ -276,12 +275,11 @@ public class ClientProxy extends CommonProxy {
             case GEOCENTRIC_DRILL_CONTROLLER -> new GuiGeocentricDrill((GeocentricDrillController) present, player);
             case ECALCULATOR_CONTROLLER -> new GuiECalculatorController((ECalculatorController) present, player);
             case AUTO_CRAFTGUI -> {
-                var stack = y == 1 ? BaublesApi.getBaublesHandler(player).getStackInSlot(x)
-                    : player.inventory.getStackInSlot(x);
-                if (stack.getItem() instanceof IWirelessTermHandler wt) {
-                    yield new GuiNEWCraftConfirm(player.inventory,
-                        new WirelessTerminalGuiObject(wt, stack, player, player.world, x, y, Integer.MIN_VALUE));
-                } else yield null;
+                if (!(player.openContainer instanceof ContainerNEWCraftConfirm container)) {
+                    yield null;
+                }
+                yield new GuiNEWCraftConfirm(container, player.inventory, container.getGuiTitle(),
+                    GuiStyleManager.loadStyleDoc("/screens/craft_confirm.json"));
             }
             case MACHINE_ASSEMBLY_TOOL -> new GuiMachineAssemblyTool(player);
         };
