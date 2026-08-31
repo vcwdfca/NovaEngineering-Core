@@ -50,7 +50,10 @@ dependencies {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
-    modImplementation("curse.maven:modularui-uf-1663175:8704196"){
+    /*modImplementation("curse.maven:modularui-uf-1663175:8704196"){
+        transitive = false
+    }*/
+    modImplementation("curse.maven:modularui-624243:7929464") {
         transitive = false
     }
 
