@@ -2,6 +2,7 @@ package github.kasuminova.novaeng.common.tile.ecotech.efabricator
 
 import ae2.api.AECapabilities
 import ae2.api.crafting.IPatternDetails
+import ae2.api.crafting.PatternDetailsHelper
 import ae2.api.networking.GridFlags
 import ae2.api.networking.IGridNode
 import ae2.api.networking.IGridNodeListener
@@ -14,7 +15,6 @@ import ae2.api.util.AECableType
 import ae2.me.ManagedGridNode
 import ae2.me.helpers.IGridConnectedTile
 import ae2.me.helpers.MachineSource
-import github.kasuminova.mmce.common.util.PatternItemFilter
 import github.kasuminova.novaeng.common.block.ecotech.efabricator.BlockEFabricatorMEChannel
 import github.kasuminova.novaeng.common.tile.ecotech.efabricator.EFabricatorWorker.CraftWork
 import hellfirepvp.modularmachinery.ModularMachinery
@@ -115,7 +115,7 @@ class EFabricatorMEChannel : EFabricatorPart(), ICraftingProvider, IGridConnecte
     }
 
     fun insertPattern(patternStack: ItemStack): Boolean {
-        if (!PatternItemFilter.INSTANCE.allowInsert(null, -1, patternStack)) {
+        if (!PatternDetailsHelper.isEncodedPattern(patternStack)) {
             return false
         }
         if (partController != null) {

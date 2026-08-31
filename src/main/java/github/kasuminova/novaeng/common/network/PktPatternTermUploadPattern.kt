@@ -3,7 +3,7 @@ package github.kasuminova.novaeng.common.network
 import ae2.api.crafting.IPatternDetails
 import ae2.api.crafting.PatternDetailsHelper
 import ae2.api.networking.security.IActionHost
-import ae2.container.me.items.ContainerPatternEncodingTerm
+import ae2.container.me.patternencode.ContainerPatternEncodingTerm
 import ae2.container.SlotSemantics
 import ae2.core.definitions.AEItems
 import github.kasuminova.novaeng.common.tile.ecotech.efabricator.EFabricatorMEChannel

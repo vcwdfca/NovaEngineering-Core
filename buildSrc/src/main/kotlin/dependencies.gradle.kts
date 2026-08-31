@@ -1,73 +1,62 @@
-apply from: 'gradle/scripts/helpers.gradle'
-
-repositories {
-    flatDir {
-        dirs('lib')
-    }
-    maven {
-        url = 'https://maven.cleanroommc.com'
-    }
-    maven {
-        name = 'CurseMaven'
-        url = 'https://cursemaven.com'
-    }
-    maven {
-        name = 'CleanroomCurseMaven'
-        url = 'https://curse.cleanroommc.com'
-    }
-    maven {
-        url = 'https://maven.blamejared.com/'
-    }
-    maven {
-        url = 'https://repo.spongepowered.org/maven'
-    }
-    maven {
-        name = 'GeckoLib'
-        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
-    }
-    maven {
-        url = 'https://jitpack.io'
-    }
-    mavenCentral()
+plugins {
+    java
 }
 
-dependencies {
-    compileOnly 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
-    annotationProcessor 'com.google.guava:guava:32.0.1-android'
-    annotationProcessor 'com.google.code.gson:gson:2.8.9'
-    compileOnly 'org.jetbrains:annotations:24.1.0'
-    annotationProcessor 'org.jetbrains:annotations:24.1.0'
+val enablelwjglx: String = project.property("enable_lwjglx") as String
+val enableLwjglx = enablelwjglx.toBoolean()
 
-    if (propertyBool('enable_lwjglx')) {
-        compileOnly 'com.cleanroommc:lwjglx:1.0.0'
+repositories {
+    // Other repositories described by default:
+    // CleanroomMC: https://maven.cleanroommc.com
+    mavenCentral()
+    maven {
+        name = "CurseMaven"
+        setUrl("https://cursemaven.com")
+    }
+    maven {
+        name = "CleanroomCurseMaven"
+        setUrl("https://curse.cleanroommc.com")
+    }
+    maven {
+        name = "Modrinth"
+        setUrl("https://api.modrinth.com/maven")
+    }
+    maven {
+        name = "CleanroomMaven"
+        url = uri("https://maven.cleanroommc.com")
+    }
+    mavenLocal() // Must be last for caching to work
+}
+dependencies {
+    if (enableLwjglx) {
+        compileOnly("com.cleanroommc:lwjglx:1.0.0")
     }
 
-    modImplementation "curse.maven:fugue-1005815:8230893"
+    add("modLibrary", "io.github.chaosunity.forgelin:Forgelin-Continuous:2.4.0.0:dev")
+    add("modLibrary", "mezz:jei:4.33.0:dev")
 
-    implementation 'io.github.chaosunity.forgelin:Forgelin-Continuous:2.3.20.0'
+    modImplementation("curse.maven:fugue-1005815:8230893")
+
     implementation('CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.711') {
         exclude group: 'org.ow2.asm', module: 'asm-debug-all'
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
-    /*modImplementation("curse.maven:modularui-uf-1663175:8704196"){
+    /*modImplementation("curse.maven:modularui-624243:7929464") {
         transitive = false
     }*/
-    modImplementation("curse.maven:modularui-624243:7929464") {
-        transitive = false
-    }
 
-    modImplementation ":MMCE-ComponentModelHider:1.1:dev"
+    modImplementation(":MMCE-ComponentModelHider:1.1:dev")
     //modImplementation ":resourceloader:1.5.3:main"
     modImplementation ":circulation_networks-1.12.2:1.1.0:dev"
     modImplementation ":ModularMachinery-CE:2.3.3:dev"
-    modImplementation ":appcompat:0.0.0+af09e46:dev"
+    modCompileOnly ":appcompat:0.0.0+d41e164:dev"
 
     modCompileOnly 'curse.maven:electroblobs-wizardry-265642:5354477'
     modImplementation 'curse.maven:lumenized-1234162:6378222'
     modImplementation 'curse.maven:mantle-74924:2713386'
     modImplementation 'curse.maven:tinkers-construct-74072:2902483'
-    modImplementation 'curse.maven:not-enough-energistics-515565:5234732'
+    //modImplementation 'curse.maven:not-enough-energistics-515565:5234732'
     modImplementation 'curse.maven:psi-241665:3085917'
     modImplementation 'curse.maven:psio-339394:3077697'
     modImplementation 'curse.maven:RandomTweaker-514170:5528753'
@@ -81,7 +70,8 @@ dependencies {
     modImplementation 'curse.maven:patchouli-306770:3162874'
 
     def ae2_version = "1.0.12"
-    modImplementation "com.github.FormlessDragon:Applied-Energistics-2-Supergiant:v${ae2_version}:dev"
+    //modImplementation "com.github.FormlessDragon:Applied-Energistics-2-Supergiant:v${ae2_version}:dev"
+    modCompileOnly ":AppliedEnergistics2-Supergiant:1.0.13:dev"
     def mekeng_version = "1.1.1"
     modCompileOnly "com.github.FormlessDragon:Applied-Mekanistics:v${mekeng_version}:dev"
     modImplementation 'curse.maven:CodeChickenLib-242818:2779848'
@@ -123,7 +113,7 @@ dependencies {
     modImplementation 'curse.maven:AutoRegLib-250363:2746011'
     modImplementation 'curse.maven:Cucumber-272335:2645867'
     modImplementation 'curse.maven:extended-crafting-nomifactory-edition-398267:5778512'
-    modImplementation 'curse.maven:techguns-244201:2958103'
+    modCompileOnly 'curse.maven:techguns-244201:2958103'
     modImplementation 'curse.maven:legendary-tooltips-532127:5734973'
     modImplementation 'curse.maven:nuclearcraft-overhauled-336895:6605808'
     modImplementation 'curse.maven:loot-overhaul-299389:2711740'

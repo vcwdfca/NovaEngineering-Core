@@ -1,6 +1,5 @@
 {
   "package": "github.kasuminova.novaeng.mixin",
-  "plugin": "github.kasuminova.novaeng.mixin.NovaEngCoreLateMixinLoader",
   "refmap": "mixins.novaeng_core.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",

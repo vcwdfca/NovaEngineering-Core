@@ -41,12 +41,11 @@ public class NovaEngCoreLateMixinLoader implements IMixinConfigPlugin {
             case "dme" -> Loader.isModLoaded("deepmoblearning")
                 && Loader.instance().getIndexedModList().get("deepmoblearning").getName().equals("DeepMobEvolution");
             case "botania_r" -> Loader.isModLoaded("botania") && NovaEngCoreConfig.SERVER.bot;
-            case "ae2" -> Loader.isModLoaded("appliedenergistics2");
+            case "ae2" -> Loader.isModLoaded("ae2");
             case "ar" -> Loader.isModLoaded("advancedrocketry");
             case "actuallyadditions" -> Loader.isModLoaded("actuallyadditions");
             case "astralsorcery" -> Loader.isModLoaded("astralsorcery");
             case "athenaeum" -> Loader.isModLoaded("athenaeum");
-            case "betterp2p" -> Loader.isModLoaded("betterp2p");
             case "botania" -> Loader.isModLoaded("botania");
             case "codechickenlib" -> Loader.isModLoaded("codechickenlib");
             case "cofh" -> Loader.isModLoaded("cofhcore");
@@ -63,7 +62,6 @@ public class NovaEngCoreLateMixinLoader implements IMixinConfigPlugin {
             case "lootoverhaul" -> Loader.isModLoaded("lootoverhaul");
             case "mets" -> Loader.isModLoaded("mets");
             case "modularrouters" -> Loader.isModLoaded("modularrouters");
-            case "nae2" -> Loader.isModLoaded("nae2");
             case "nco" -> Loader.isModLoaded("nuclearcraft");
             case "opticheck" -> Loader.isModLoaded("opticheck");
             case "packagedauto" -> Loader.isModLoaded("packagedauto");
