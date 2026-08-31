@@ -44,6 +44,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 
 import static github.kasuminova.novaeng.mixin.NovaEngCoreEarlyMixinLoader.LOG;
 import static github.kasuminova.novaeng.mixin.NovaEngCoreEarlyMixinLoader.LOG_PREFIX;

@@ -2,11 +2,14 @@ package github.kasuminova.novaeng.common.tile;
 
 import com.circulation.circulation_networks.api.EnergyAmount;
 import com.circulation.circulation_networks.api.EnergyAmounts;
+import com.circulation.circulation_networks.api.HandlerTickResult;
 import com.circulation.circulation_networks.api.IEnergyHandler;
 import com.circulation.circulation_networks.api.IMachineNodeBlockEntity;
 import com.circulation.circulation_networks.api.node.IMachineNode;
 import com.circulation.circulation_networks.api.node.NodeContext;
 import com.circulation.circulation_networks.api.node.NodeType;
+import com.circulation.circulation_networks.manager.HandlerBindingPolicy;
+import com.circulation.circulation_networks.manager.HandlerInvalidationSink;
 import com.circulation.circulation_networks.network.nodes.HubNode;
 import com.circulation.circulation_networks.network.nodes.Node;
 import com.circulation.circulation_networks.tiles.nodes.BaseNodeTileEntity;
@@ -20,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -120,29 +124,38 @@ public class TileDreamEnergyPort extends BaseNodeTileEntity<IMachineNode> implem
         private byte init = 0;
 
         @Override
-        public void init(TileEntity tileEntity, HubNode.HubMetadata hubMetadata) {
-            if (getCtrlStructureFormed()) {
-                canSend.init(DreamEnergyCore.getEnergyStoredString(getCtrl()));
-                init = SUCCEEDED;
-            } else init = FAILED;
+        public HandlerBindingPolicy bindingPolicy() {
+            return null;
         }
 
         @Override
-        public void init(ItemStack itemStack, HubNode.HubMetadata hubMetadata) {
+        public void bindBlockEntity(TileEntity tileEntity, HandlerInvalidationSink handlerInvalidationSink) {
 
         }
 
         @Override
-        public void clear() {
-            if (init == SUCCEEDED) {
-                var ctrl = getCtrl();
-                DreamEnergyCore.extractEnergy(ctrl, send.asBigInteger());
-                DreamEnergyCore.receiveEnergy(ctrl, receive.asBigInteger());
-            }
-            canSend.setZero();
-            receive.setZero();
-            send.setZero();
-            init = 0;
+        public HandlerTickResult beginServerTick(long l) {
+            return null;
+        }
+
+        @Override
+        public void endServerTick(long l) {
+
+        }
+
+        @Override
+        public void unbindBlockEntity() {
+
+        }
+
+        @Override
+        public void bindItem(ItemStack itemStack, @Nullable HubNode.HubMetadata hubMetadata) {
+
+        }
+
+        @Override
+        public void unbindItem() {
+
         }
 
         @Override
