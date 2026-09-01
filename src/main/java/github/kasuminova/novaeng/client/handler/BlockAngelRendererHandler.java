@@ -1,17 +1,17 @@
 package github.kasuminova.novaeng.client.handler;
 
+import github.kasuminova.novaeng.NovaEngineeringCore;
 import github.kasuminova.novaeng.common.block.BlockAngel;
 import github.kasuminova.novaeng.common.item.ItemBlockAngel;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -27,41 +27,47 @@ public class BlockAngelRendererHandler {
     }
 
     protected static void renderAngelBlockToWorld(final BlockPos renderPos) {
+        Minecraft mc = Minecraft.getMinecraft();
         Entity view = getViewEntity();
 
-        float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+        float partialTicks = mc.getRenderPartialTicks();
         double tx = view.lastTickPosX + ((view.posX - view.lastTickPosX) * partialTicks);
         double ty = view.lastTickPosY + ((view.posY - view.lastTickPosY) * partialTicks);
         double tz = view.lastTickPosZ + ((view.posZ - view.lastTickPosZ) * partialTicks);
-        GlStateManager.translate(-tx, -ty, -tz);
-        GlStateManager.color(1F, 1F, 1F, 0.5F);
-        GlStateManager.disableDepth();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_DST_COLOR);
-
-        BlockRendererDispatcher brd = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        Tessellator tes = Tessellator.getInstance();
-        BufferBuilder vb = tes.getBuffer();
-        VertexFormat blockFormat = DefaultVertexFormats.BLOCK;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(renderPos.getX(), renderPos.getY(), renderPos.getZ());
-        GlStateManager.translate(0.125, 0.125, 0.125);
-        GlStateManager.scale(0.75, 0.75, 0.75);
+        try {
+            GlStateManager.translate(-tx, -ty, -tz);
+            GlStateManager.translate(renderPos.getX(), renderPos.getY(), renderPos.getZ());
+            GlStateManager.translate(0.125D, 0.125D, 0.125D);
+            GlStateManager.scale(0.75F, 0.75F, 0.75F);
 
-        vb.begin(GL11.GL_QUADS, blockFormat);
-        brd.renderBlock(
-            BlockAngel.INSTANCE.getDefaultState(),
-            BlockPos.ORIGIN,
-            Minecraft.getMinecraft().world,
-            vb
-        );
-        tes.draw();
+            GlStateManager.color(1F, 1F, 1F, 0.5F);
+            GlStateManager.disableDepth();
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_DST_COLOR);
 
-        GlStateManager.popMatrix();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.enableDepth();
-        GlStateManager.color(1F, 1F, 1F, 1F);
+            mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+            Tessellator tess = Tessellator.getInstance();
+            BufferBuilder buf = tess.getBuffer();
+            buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+
+            boolean rendered = mc.getBlockRendererDispatcher().renderBlock(
+                BlockAngel.INSTANCE.getDefaultState(),
+                BlockPos.ORIGIN,
+                mc.world,
+                buf
+            );
+            NovaEngineeringCore.log.info("Angel preview: pos={}, rendered={}, vertices={}", renderPos, rendered, buf.getVertexCount());
+            tess.draw();
+        } finally {
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GlStateManager.disableBlend();
+            GlStateManager.enableDepth();
+            GlStateManager.color(1F, 1F, 1F, 1F);
+            GlStateManager.popMatrix();
+        }
     }
 
     protected static Entity getViewEntity() {
