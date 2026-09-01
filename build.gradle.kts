@@ -14,7 +14,6 @@ plugins {
     id("com.gradleup.shadow") version "9.5.1"
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.4.1"
     id("xyz.wagyourtail.unimined") version "1.4.36-kappa"
-    id("net.kyori.blossom") version "2.2.0"
 }
 
 val modVersion: String = project.property("mod_version") as String
@@ -174,6 +173,14 @@ pluginManager.apply("dependencies")
 
 tasks.processResources {
     rename("(.+_at.cfg)", "META-INF/$1")
+    val resourceProps = mapOf(
+        "version" to project.version,
+        "mcversion" to "1.12.2",
+    )
+    inputs.properties(resourceProps)
+    filesMatching("mcmod.info") {
+        expand(resourceProps)
+    }
 }
 
 val generatedTagsDir = layout.buildDirectory.dir("generated/sources/tags/main/java")
@@ -209,33 +216,6 @@ sourceSets {
         java.srcDir(generateTags)
         compileClasspath += api.output
         runtimeClasspath += api.output
-        blossom {
-            kotlinSources {
-                property("mod_id", modId)
-                property("mod_name", modName)
-                property("mod_version", modVersion)
-                property("package", "$rootPackage.$modId")
-            }
-            resources {
-                property("mod_id", modId)
-                property("mod_name", modName)
-                property("mod_version", modVersion)
-                property("mod_description", modDescription)
-                property(
-                    "mod_authors",
-                    modAuthors
-                        .takeIf { it.isNotBlank() }
-                        ?.split(",")
-                        ?.filter { it.isNotBlank() }
-                        ?.joinToString("\", \"") { it.trim() } ?: "",
-                )
-                property("mod_credits", modCredits)
-                property("mod_url", modUrl)
-                property("mod_update_json", modUpdateJson)
-                property("mod_logo_path", modLogoPath)
-                property("mod_issue_tracker", modIssueTracker)
-            }
-        }
     }
 }
 

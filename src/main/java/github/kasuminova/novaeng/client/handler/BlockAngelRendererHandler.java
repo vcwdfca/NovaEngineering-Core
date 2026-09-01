@@ -1,6 +1,5 @@
 package github.kasuminova.novaeng.client.handler;
 
-import github.kasuminova.novaeng.NovaEngineeringCore;
 import github.kasuminova.novaeng.common.block.BlockAngel;
 import github.kasuminova.novaeng.common.item.ItemBlockAngel;
 import net.minecraft.block.state.IBlockState;
@@ -19,7 +18,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
-@SuppressWarnings("MethodMayBeStatic")
 public class BlockAngelRendererHandler {
     public static final BlockAngelRendererHandler INSTANCE = new BlockAngelRendererHandler();
 
@@ -53,13 +51,12 @@ public class BlockAngelRendererHandler {
             BufferBuilder buf = tess.getBuffer();
             buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-            boolean rendered = mc.getBlockRendererDispatcher().renderBlock(
+            mc.getBlockRendererDispatcher().renderBlock(
                 BlockAngel.INSTANCE.getDefaultState(),
                 BlockPos.ORIGIN,
                 mc.world,
                 buf
             );
-            NovaEngineeringCore.log.info("Angel preview: pos={}, rendered={}, vertices={}", renderPos, rendered, buf.getVertexCount());
             tess.draw();
         } finally {
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

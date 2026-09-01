@@ -27,7 +27,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build
-        run: chmod +x gradlew && ./gradlew build
+        run: chmod +x gradlew && ./gradlew build --max-workers=4
 
       - name: Read mod version
         id: props
