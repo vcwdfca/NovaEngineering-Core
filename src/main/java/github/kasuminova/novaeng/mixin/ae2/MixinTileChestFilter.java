@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@SuppressWarnings("MethodMayBeStatic")
 @Mixin(targets = "ae2.tile.storage.TileMEChest$CellInventoryFilter", remap = false)
 public class MixinTileChestFilter {
 
@@ -17,7 +16,7 @@ public class MixinTileChestFilter {
      */
     @Inject(method = "allowInsert", at = @At("HEAD"), cancellable = true, remap = false)
     private void injectEStorageCellCheck(final InternalInventory inv, final int slot, final ItemStack stack, final CallbackInfoReturnable<Boolean> cir) {
-        if (stack.getItem() instanceof EStorageCell<?>) {
+        if (stack.getItem() instanceof EStorageCell) {
             cir.setReturnValue(false);
         }
     }

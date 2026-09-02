@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
 
-public abstract class EStorageCell<T> extends AEBaseItem implements IBasicCellItem {
+public abstract class EStorageCell extends AEBaseItem implements IBasicCellItem {
     @Getter
     protected final DriveStorageLevel level;
     protected final int totalBytes;

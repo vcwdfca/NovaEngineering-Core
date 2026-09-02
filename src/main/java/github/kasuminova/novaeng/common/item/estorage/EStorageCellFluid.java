@@ -1,6 +1,5 @@
 package github.kasuminova.novaeng.common.item.estorage;
 
-import ae2.api.stacks.AEFluidKey;
 import ae2.api.stacks.AEKeyType;
 import github.kasuminova.novaeng.NovaEngineeringCore;
 import github.kasuminova.novaeng.common.block.ecotech.estorage.prop.DriveStorageLevel;
@@ -9,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class EStorageCellFluid extends EStorageCell<AEFluidKey> {
+public class EStorageCellFluid extends EStorageCell {
 
     public static final EStorageCellFluid LEVEL_A = new EStorageCellFluid(DriveStorageLevel.A, 16, 4);
     public static final EStorageCellFluid LEVEL_B = new EStorageCellFluid(DriveStorageLevel.B, 64, 16);

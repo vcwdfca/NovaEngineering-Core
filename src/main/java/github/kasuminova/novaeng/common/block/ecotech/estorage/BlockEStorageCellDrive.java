@@ -94,7 +94,6 @@ public class BlockEStorageCellDrive extends BlockEStoragePart {
 
     @Nonnull
     @Override
-    @SuppressWarnings("rawtypes")
     public IBlockState getActualState(@Nonnull final IBlockState state, @Nonnull final IBlockAccess world, @Nonnull final BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (!(te instanceof EStorageCellDrive drive)) {
@@ -111,7 +110,7 @@ public class BlockEStorageCellDrive extends BlockEStoragePart {
             return state;
         }
 
-        EStorageCell<?> cell = (EStorageCell<?>) stack.getItem();
+        EStorageCell cell = (EStorageCell) stack.getItem();
         DriveStorageLevel level = cell.getLevel();
         DriveStorageType type = EStorageCellDrive.getCellType(cell);
         if (type == null) {

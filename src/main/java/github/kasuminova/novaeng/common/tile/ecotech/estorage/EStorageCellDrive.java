@@ -96,16 +96,15 @@ public class EStorageCellDrive extends EStoragePart implements ISaveProvider, In
         };
     }
 
-    public static DriveStorageType getCellType(final EStorageCell<?> cell) {
+    public static DriveStorageType getCellType(final EStorageCell cell) {
         DriveStorageType type;
-        if (cell instanceof EStorageCellItem) {
-            type = DriveStorageType.ITEM;
-        } else if (cell instanceof EStorageCellFluid) {
-            type = DriveStorageType.FLUID;
-        } else if (Mods.MEKENG.isPresent() && cell instanceof EStorageCellGas) {
-            type = DriveStorageType.GAS;
-        } else {
-            return null;
+        switch (cell) {
+            case EStorageCellItem _ -> type = DriveStorageType.ITEM;
+            case EStorageCellFluid _ -> type = DriveStorageType.FLUID;
+            case EStorageCellGas _ when Mods.MEKENG.isPresent() -> type = DriveStorageType.GAS;
+            case null, default -> {
+                return null;
+            }
         }
         return type;
     }
@@ -180,7 +179,7 @@ public class EStorageCellDrive extends EStoragePart implements ISaveProvider, In
             return;
         }
         StorageCell cellInventory = StorageCells.getCellInventory(stack, this);
-        if (cellInventory != null && stack.getItem() instanceof EStorageCell<?> cell) {
+        if (cellInventory != null && stack.getItem() instanceof EStorageCell cell) {
             cellHandler = cellInventory;
             driveInv.setHandler(0, cellInventory);
             watcher = new ECellDriveWatcher(cellInventory, this);
@@ -224,7 +223,7 @@ public class EStorageCellDrive extends EStoragePart implements ISaveProvider, In
 
     public ECellDriveWatcher getHandler(final AEKeyType channel) {
         updateHandler(false);
-        if (driveInv.getStackInSlot(0).getItem() instanceof EStorageCell<?> cell && isCellSupported(cell.getLevel())) {
+        if (driveInv.getStackInSlot(0).getItem() instanceof EStorageCell cell && isCellSupported(cell.getLevel())) {
             return inventoryHandlers.get(channel);
         }
         return null;
@@ -322,7 +321,7 @@ public class EStorageCellDrive extends EStoragePart implements ISaveProvider, In
         @Override
         public boolean allowInsert(InternalInventory inv, int slot, ItemStack stack) {
             return !stack.isEmpty()
-                && stack.getItem() instanceof EStorageCell<?>
+                && stack.getItem() instanceof EStorageCell
                 && StorageCells.isCellHandled(stack);
         }
 

@@ -1,7 +1,6 @@
 package github.kasuminova.novaeng.common.item.estorage;
 
 import ae2.api.stacks.AEKeyType;
-import me.ramidzkh.mekae2.ae2.AEGasKey;
 import me.ramidzkh.mekae2.ae2.AEGasKeyType;
 import github.kasuminova.novaeng.NovaEngineeringCore;
 import github.kasuminova.novaeng.common.block.ecotech.estorage.prop.DriveStorageLevel;
@@ -9,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-public class EStorageCellGas extends EStorageCell<AEGasKey> {
+public class EStorageCellGas extends EStorageCell {
 
     public static final EStorageCellGas LEVEL_A = new EStorageCellGas(DriveStorageLevel.A, 16, 4);
     public static final EStorageCellGas LEVEL_B = new EStorageCellGas(DriveStorageLevel.B, 64, 16);

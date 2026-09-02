@@ -45,16 +45,7 @@ public abstract class MixinCraftingCPUCluster implements ECPUCluster {
     protected MachineSource machineSrc;
 
     @Shadow
-    public abstract void destroy();
-
-    @Shadow
-    public abstract void markDirty();
-
-    @Shadow
     public abstract IGrid getGrid();
-
-    @Shadow
-    protected abstract ICraftingCPUTileEntity getCore();
 
     @Shadow
     public abstract World getLevel();
